@@ -9,3 +9,7 @@ edition = "2018"
 [dependencies]
 mio = "0.6"
 pin-project-lite = "0.1"
+rsc2_pb = {path = "../rsc2/rsc2-pb", features=["codec"]}
+tokio-util = "0.2"
+futures = "0.3"
+bytes = "0.5"
