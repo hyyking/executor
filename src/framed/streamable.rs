@@ -45,11 +45,6 @@ where
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         let mut pinned = self.project();
         loop {
-            // Repeatedly call `decode` or `decode_eof` as long as it is
-            // "readable". Readable is defined as not having returned `None`. If
-            // the upstream has returned EOF, and the decoder is no longer
-            // readable, it can be assumed that the decoder will never become
-            // readable again, at which point the stream is terminated.
             if *pinned.is_readable {
                 if *pinned.is_eof {
                     let frame = pinned.inner.project().codec.decode_eof(&mut pinned.buff)?;

@@ -110,7 +110,6 @@ impl<E: mio::Evented> PollEvented<E> {
             .fetch_and(!ready.as_usize(), Ordering::Relaxed);
 
         if self.poll_read_ready(cx, ready)?.is_ready() {
-            // Notify the current task
             cx.waker().wake_by_ref();
         }
 
@@ -132,7 +131,6 @@ impl<E: mio::Evented> PollEvented<E> {
             .fetch_and(!mio::Ready::writable().as_usize(), Ordering::Relaxed);
 
         if self.poll_write_ready(cx)?.is_ready() {
-            // Notify the current task
             cx.waker().wake_by_ref();
         }
 
@@ -149,6 +147,7 @@ where
         cx: &mut Context<'_>,
         buf: &mut [u8],
     ) -> Poll<io::Result<usize>> {
+        println!("evented poll_read");
         ready!(self.poll_read_ready(cx, mio::Ready::readable()))?;
 
         let r = (*self).get_mut().read(buf);

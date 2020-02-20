@@ -23,9 +23,18 @@ impl Scheduled {
                 .compare_exchange(current, new, Ordering::AcqRel, Ordering::Acquire)
             {
                 Ok(_) => return current,
-                // we lost the race, retry!
                 Err(actual) => current = actual,
             }
+        }
+    }
+}
+
+impl Default for Scheduled {
+    fn default() -> Self {
+        Self {
+            readiness: AtomicUsize::new(mio::Ready::empty().as_usize()),
+            reader: AtomicWaker::new(),
+            writer: AtomicWaker::new(),
         }
     }
 }

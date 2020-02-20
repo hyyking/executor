@@ -436,6 +436,7 @@ dependencies = [
  "mio",
  "pin-project-lite",
  "rsc2_pb",
+ "slab",
  "tokio",
  "tokio-util",
  "websocket-lite",
@@ -761,7 +762,7 @@ dependencies = [
  "rsc2_macro",
  "tokio",
  "tokio-util",
- "websocket-codec 0.2.2",
+ "websocket-codec",
 ]
 
 [[package]]
@@ -981,19 +982,6 @@ checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 [[package]]
 name = "websocket-codec"
 version = "0.2.2"
-dependencies = [
- "base64",
- "byteorder",
- "bytes",
- "httparse",
- "rand",
- "sha1",
- "tokio-util",
-]
-
-[[package]]
-name = "websocket-codec"
-version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b949f2c31c1e5e3c33d30fc5045d1c8fa53ca79f23d65df7ae5441e3e3e04b3f"
 dependencies = [
@@ -1021,7 +1009,7 @@ dependencies = [
  "tokio-tls",
  "tokio-util",
  "url",
- "websocket-codec 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "websocket-codec",
 ]
 
 [[package]]

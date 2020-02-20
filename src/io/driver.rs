@@ -8,7 +8,7 @@ use std::{
     task::Waker,
 };
 
-use super::{Registration, Scheduled};
+use super::{Registration, Scheduled, SuperSlab};
 
 use futures::task::AtomicWaker;
 
@@ -158,10 +158,7 @@ impl Handle {
 impl Direction {
     pub fn mask(self) -> mio::Ready {
         match self {
-            Self::Read => {
-                // Everything except writable is signaled through read.
-                mio::Ready::all() - mio::Ready::writable()
-            }
+            Self::Read => mio::Ready::all() - mio::Ready::writable(),
             Self::Write => mio::Ready::writable() | mio::unix::UnixReady::hup(),
         }
     }

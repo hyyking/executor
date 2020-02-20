@@ -1,15 +1,20 @@
+mod block_on;
 mod framed;
 mod io;
 mod tcp;
 
 use std::thread;
 
+use crate::block_on::block_on;
 use crate::framed::Framed;
 use crate::io::Driver;
 use crate::tcp::TcpStream;
 
-use futures::stream::StreamExt;
-
+use futures::{SinkExt, StreamExt};
+use rsc2_pb::{
+    api::{Request, RequestPing},
+    codec::from_ws_client,
+};
 use websocket_lite::ClientBuilder;
 
 fn main() -> Result<(), std::io::Error> {
@@ -26,19 +31,21 @@ fn main() -> Result<(), std::io::Error> {
         }
     });
 
-    let stream = futures::executor::block_on(TcpStream::connect(handle, addr))?;
+    let stream = block_on(TcpStream::connect(handle, addr))?;
 
     let client = ClientBuilder::new("ws://127.0.0.1:5000/sc2api").unwrap();
 
-    let mut framed = Framed::from_parts(
-        futures::executor::block_on(client.async_connect_on(stream))
-            .unwrap()
-            .into_parts(),
-    );
+    block_on(async {
+        let mut framed = from_ws_client(client.async_connect_on(stream).await.unwrap());
+        for req in 0..5 {
+            thread::sleep(std::time::Duration::from_secs(1));
 
-    loop {
-        thread::sleep(std::time::Duration::from_millis(1000));
-        let c = futures::executor::block_on(framed.next());
-        println!("{:?}", c);
-    }
+            println!("SENDING...");
+            framed.send(Request::new(req, RequestPing {})).await;
+            println!("SENT...");
+            let c = framed.next().await;
+            println!("RECEIVED: {:#?}", c);
+        }
+    });
+    Ok(())
 }
