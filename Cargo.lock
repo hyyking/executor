@@ -110,6 +110,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "executor"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "futures",
+ "mio",
+ "pin-project-lite",
+ "rsc2_pb",
+ "slab",
+ "tokio",
+ "tokio-util",
+ "websocket-lite",
+]
+
+[[package]]
 name = "failure"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -425,21 +440,6 @@ dependencies = [
  "net2",
  "slab",
  "winapi 0.2.8",
-]
-
-[[package]]
-name = "mio-tests"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "futures",
- "mio",
- "pin-project-lite",
- "rsc2_pb",
- "slab",
- "tokio",
- "tokio-util",
- "websocket-lite",
 ]
 
 [[package]]
