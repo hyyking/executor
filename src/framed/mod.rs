@@ -47,6 +47,7 @@ impl<T, U> Framed<T, U> {
             ),
         }
     }
+    #[allow(dead_code)]
     pub fn from_parts(parts: FramedParts<T, U>) -> Self {
         let FramedParts {
             io,
