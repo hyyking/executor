@@ -1,9 +1,15 @@
+mod pool;
+mod spawner;
+mod task;
+mod worker;
+
 use std::future::Future;
 use std::mem::{self, ManuallyDrop};
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Poll, RawWaker, RawWakerVTable, Waker};
 
+use self::task::{JoinHandle, Task};
 use crate::park::{Park, Unpark};
 
 #[allow(dead_code)]
@@ -29,6 +35,7 @@ const VTABLE: RawWakerVTable = RawWakerVTable::new(
 pub struct Executor<P> {
     park: P,
     state: Arc<UnparkState>,
+    pool: pool::ThreadPool,
 }
 
 struct UnparkState {
@@ -37,12 +44,13 @@ struct UnparkState {
 
 impl<P: Park> Executor<P> {
     pub fn new(park: P) -> Self {
-        let unpark = park.handle();
+        let unpark = Box::new(park.handle());
+        let (pool, workers) = pool::ThreadPool::new();
+        workers.spawn();
         Self {
+            state: Arc::new(UnparkState { unpark }),
             park,
-            state: Arc::new(UnparkState {
-                unpark: Box::new(unpark),
-            }),
+            pool,
         }
     }
 
@@ -57,12 +65,20 @@ impl<P: Park> Executor<P> {
             if let Poll::Ready(o) = f.as_mut().poll(&mut cx) {
                 return o;
             }
-            // tick the scheduler
 
             self.park
                 .park_timeout(std::time::Duration::from_millis(0))
-                .ok()
                 .expect("problem parking");
         }
+    }
+
+    pub fn spawn<F>(&self, f: F) -> JoinHandle<F::Output>
+    where
+        F: Future + Send + 'static,
+        F::Output: Send + 'static,
+    {
+        let (task, handle) = task::joinable(f);
+        self.pool.spawn(task);
+        handle
     }
 }

@@ -1,14 +1,14 @@
+mod executor;
 mod framed;
 mod io;
 mod park;
-mod scheduler;
 mod tcp;
 
 use std::thread;
 
+use crate::executor::Executor;
 use crate::io::Driver;
 use crate::park::Parker;
-use crate::scheduler::Executor;
 use crate::tcp::TcpStream;
 
 use futures::{SinkExt, StreamExt};
