@@ -1,12 +1,13 @@
 mod executor;
 mod framed;
 mod io;
+mod macros;
 mod park;
 mod tcp;
-
+/*
 use std::thread;
 
-use crate::executor::Executor;
+use crate::executor::ThreadPool;
 use crate::io::Driver;
 use crate::park::Parker;
 use crate::tcp::TcpStream;
@@ -17,8 +18,12 @@ use rsc2_pb::{
     codec::from_ws_client,
 };
 use websocket_lite::ClientBuilder;
+*/
 
-fn main() -> Result<(), std::io::Error> {
+fn main() {}
+
+/*
+fn _main() -> Result<(), std::io::Error> {
     let addr = "127.0.0.1:5000".parse().unwrap();
 
     // Setup the driver
@@ -45,3 +50,4 @@ fn main() -> Result<(), std::io::Error> {
 
     Ok(())
 }
+*/
